@@ -1,0 +1,62 @@
+<launch>
+    <arg name="namespace"   default="$(env UAV_NAMESPACE)"/>
+    <arg name="odom"        default="mavros/global_position/local"/>
+
+    <arg name="x_offset"    default="visual_servo/offset_x"/>
+    <arg name="y_offset"    default="visual_servo/offset_y"/>
+    <arg name="x_target_error" default="visual_servo/target_error_x"/>
+    <arg name="y_target_error" default="visual_servo/target_error_y"/>
+    <arg name="process_value" default="visual_servo/process_value"/>
+    <arg name="status"      default="visual_servo/is_enabled"/>
+    <arg name="patch_centroid" default="pointcloud_filter/pc_filter/patch_centroid"/>
+
+    <group ns="$(arg namespace)">
+        
+         <!-- Visual servo state machine parameters -->
+        <rosparam command="load"
+            file="$(find uav_ros_control)/config/reference/visual_servo_brick.yaml" />
+        
+        <!-- Visual servo node -->
+        <node
+            pkg="uav_ros_control"
+            type="visual_servo_node"
+            name="visual_servo_node"
+            output="screen">
+
+            <!-- Topic remapping -->
+            <remap from="odometry" to="$(arg odom)"/>
+            <remap from="imu" to="/mavros/imu/data"/>
+            <remap from="yaw_error" to="red_color_filter/orientation_err"/>
+
+            <!-- State machine topics -->
+            <remap from="x_offset" to="$(arg x_offset)"/>
+            <remap from="y_offset" to="$(arg y_offset)"/>
+            <remap from="visual_servo/x_error" to="$(arg x_target_error)"/>
+            <remap from="visual_servo/y_error" to="$(arg y_target_error)"/>
+            <remap from="VisualServoProcessValueTopic" to="$(arg process_value)"/>
+            <!--remap from="brick/distance" to="pointcloud_filter/brick/filtered_distance"/-->
+            <remap from="centroid_point" to="pointcloud_filter/pc_filter/patch_centroid/filtered" />
+
+        </node>
+
+        <!-- Visual servo state machine parameters -->
+        <rosparam command="load"
+            file="$(find uav_ros_control)/config/reference/visual_servo_brick_sm.yaml" />
+        
+        <!-- Visual Servo state machine node -->
+        <node
+            pkg="uav_ros_control"
+            type="visual_servo_sm"
+            name="visual_servo_state_machine"
+            output="screen">
+
+            <remap from="odometry" to="$(arg odom)"/>
+            <remap from="visual_servo/status" to="$(arg status)"/>
+            <remap from="n_contours" to="red_color_filter/nContours"/>
+            <remap from="visual_servo/yaw_error" to="red_color_filter/orientation_err"/>
+            <!--remap from="brick/distance" to="pointcloud_filter/brick/filtered_distance"/-->
+            <remap from="global_centroid_point" to="visual_servo/centroid/transformed" />
+            <remap from="local_centroid_point" to="visual_servo/centroid/compensated/transformed_local" />
+        </node>
+    </group>
+</launch>

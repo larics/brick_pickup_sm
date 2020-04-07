@@ -1,0 +1,12 @@
+brick_pickup:
+  update_rate: 10
+  pub_traj_rate: 1
+  brick_approach_tolerance: 0.2
+  dropoff_approach_tolerance: 0.25
+  after_pickup_sleep: 3.0
+  initial_search_radius: 1.0
+  search_readius_increment: 0.5
+
+brick_dropoff:
+  lat: -35.363164
+  lon: 149.1652302
