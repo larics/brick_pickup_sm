@@ -13,15 +13,15 @@
 #include <dynamic_reconfigure/server.h>
 #include <std_srvs/Empty.h>
 #include <std_srvs/SetBool.h>
-#include <uav_ros_control/VisualServoStateMachineParametersConfig.h>
+#include <brick_pickup_sm/VisualServoStateMachineParametersConfig.h>
 #include <uav_ros_control_msgs/VisualServoProcessValues.h>
 #include <uav_ros_control/filters/NonlinearFilters.hpp>
-#include <uav_ros_control/reference/PickupStates.hpp>
+#include <brick_pickup_sm/PickupStates.hpp>
 #include <trajectory_msgs/MultiDOFJointTrajectoryPoint.h>
 
 namespace uav_reference {
 
-typedef uav_ros_control::VisualServoStateMachineParametersConfig vssm_param_t;
+typedef brick_pickup_sm::VisualServoStateMachineParametersConfig vssm_param_t;
 #define VSSM_DYN_RECONF "brick_config/vs_state_machine"
 #define PARAM_MIN_ERROR "visual_servo/state_machine/min_error"
 #define PARAM_MIN_TD_TAR_ERROR_Z \

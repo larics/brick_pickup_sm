@@ -3,7 +3,7 @@
 
 #include <std_msgs/Int32.h>
 #include <ros/ros.h>
-#include <uav_ros_control/GlobalPickupStateMachineParametersConfig.h>
+#include <brick_pickup_sm/GlobalPickupStateMachineParametersConfig.h>
 #include <uav_ros_control_msgs/GeoBrickApproach.h>
 #include <uav_ros_control/filters/Util.hpp>
 #include <iostream>
@@ -13,7 +13,7 @@
 #include <std_srvs/SetBool.h>
 #include <std_srvs/Empty.h>
 #include <std_msgs/Bool.h>
-#include <uav_ros_control/reference/PickupStates.hpp>
+#include <brick_pickup_sm/PickupStates.hpp>
 
 using namespace pickup_states;
 using namespace ros_util;

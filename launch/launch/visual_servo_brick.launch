@@ -14,11 +14,11 @@
         
          <!-- Visual servo state machine parameters -->
         <rosparam command="load"
-            file="$(find uav_ros_control)/config/reference/visual_servo_brick.yaml" />
+            file="$(find brick_pickup_sm)/config/visual_servo_brick.yaml" />
         
         <!-- Visual servo node -->
         <node
-            pkg="uav_ros_control"
+            pkg="brick_pickup_sm"
             type="visual_servo_node"
             name="visual_servo_node"
             output="screen">
@@ -41,12 +41,12 @@
 
         <!-- Visual servo state machine parameters -->
         <rosparam command="load"
-            file="$(find uav_ros_control)/config/reference/visual_servo_brick_sm.yaml" />
+            file="$(find brick_pickup_sm)/config/visual_servo_brick_sm.yaml" />
         
         <!-- Visual Servo state machine node -->
         <node
-            pkg="uav_ros_control"
-            type="visual_servo_sm"
+            pkg="brick_pickup_sm"
+            type="visual_servo_state_sm"
             name="visual_servo_state_machine"
             output="screen">
 

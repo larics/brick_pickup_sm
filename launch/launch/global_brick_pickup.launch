@@ -3,7 +3,7 @@
   <arg name="odom"        default="mavros/global_position/local"/>
   
   <!-- Local Visual Servo stack -->
-  <include file="$(find uav_ros_control)/launch/visual_servo_brick.launch">
+  <include file="$(find brick_pickup_sm)/launch/visual_servo_brick.launch">
     <arg name="namespace" value="$(arg namespace)"/>
     <arg name="odom" value="$(arg odom)"/>
   </include>
@@ -17,16 +17,16 @@
   <group ns="$(arg namespace)">
 
     <!-- Load Global Pickup state machine parameters -->
-    <rosparam command="load" file="$(find uav_ros_control)/config/reference/global_pickup_sm.yaml" />
+    <rosparam command="load" file="$(find brick_pickup_sm)/config/global_pickup_sm.yaml" />
 
     <!-- Start magnet_override service  -->
-    <node pkg="uav_ros_control" type="magnet_override_sim.py" name="magnet_override_sim" output="screen"/>
+    <node pkg="brick_pickup_sm" type="magnet_override_sim.py" name="magnet_override_sim" output="screen"/>
 
     <!-- Start magnet activity topic -->
-    <node pkg="uav_ros_control" type="magnet_activity_sim.py" name="magnet_activity_sim" output="screen"/>
+    <node pkg="brick_pickup_sm" type="magnet_activity_sim.py" name="magnet_activity_sim" output="screen"/>
 
     <!-- Start global pickup state machine -->
-    <node pkg="uav_ros_control" type="brick_pickup_sm" name="global_pickup_sm" output="screen">
+    <node pkg="brick_pickup_sm" type="brick_pickup_sm" name="global_pickup_sm" output="screen">
       <remap from="odometry" to="$(arg odom)"/>
       <remap from="n_contours" to="red_color_filter/nContours"/>
     </node>

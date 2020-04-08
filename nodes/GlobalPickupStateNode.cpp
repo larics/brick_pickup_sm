@@ -1,8 +1,8 @@
-#include "uav_ros_control/reference/GlobalPickupStateMachine.hpp"
+#include "brick_pickup_sm/GlobalPickupStateMachine.hpp"
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "brick_pickup_node");
+  ros::init(argc, argv, "global_pickup_sm_node");
   ros::NodeHandle nh;
 
   std::shared_ptr<uav_sm::GlobalPickupStateMachine> vssmObj{
