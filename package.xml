@@ -17,8 +17,17 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>uav_ros_control</build_depend>
-  
+  <build_depend>mbzirc_mission_control</build_depend>
+  <build_depend>uav_search</build_depend>
+  <build_depend>color_filter</build_depend>
+
   <run_depend>uav_ros_control</run_depend>
+  <run_depend>uav_search</run_depend>
+  <run_depend>topp_ros</run_depend>
+  <run_depend>mbzirc_mission_control</run_depend>
+  <run_depend>color_filter</run_depend>
+  <run_depend>pointcloud_filter</run_depend>
+
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

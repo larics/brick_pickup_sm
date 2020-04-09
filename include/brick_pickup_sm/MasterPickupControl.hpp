@@ -1,37 +1,37 @@
 #ifndef MASTER_PICKUP_CONTROL_H
 #define MASTER_PICKUP_CONTROL_H
 
+#include <Eigen/Dense>
+#include <brick_pickup_sm/PickupStates.hpp>
 #include <ros/ros.h>
 #include <uav_ros_control/filters/Util.hpp>
-#include <uav_ros_control/reference/PickupStates.hpp>
-#include <uav_ros_control/reference/TrajectoryGenerator.hpp>
 #include <uav_ros_control/reference/Global2Local.hpp>
-#include <Eigen/Dense>
+#include <uav_ros_control/reference/TrajectoryGenerator.hpp>
 
-#include <mavros_msgs/State.h>
-#include <std_msgs/String.h>
-#include <mavros_msgs/CommandBool.h>
-#include <sensor_msgs/NavSatFix.h>
-#include <nav_msgs/Odometry.h>
-#include <uav_search/GetPoints.h>
-#include <std_msgs/Int32.h>
+#include <brick_pickup_sm/MasterPickupStateMachineParametersConfig.h>
 #include <geometry_msgs/Vector3.h>
+#include <mavros_msgs/CommandBool.h>
+#include <mavros_msgs/State.h>
+#include <nav_msgs/Odometry.h>
+#include <sensor_msgs/NavSatFix.h>
 #include <std_msgs/Bool.h>
-#include <uav_ros_control/MasterPickupStateMachineParametersConfig.h>
+#include <std_msgs/Int32.h>
+#include <std_msgs/String.h>
+#include <uav_search/GetPoints.h>
 
-#include <std_srvs/SetBool.h>
-#include <std_srvs/Empty.h>
-#include <uav_ros_control_msgs/TakeOff.h>
+#include <color_filter/color.h>
 #include <mbzirc_mission_control/CompletedTask.h>
 #include <mbzirc_mission_control/NextTask.h>
+#include <std_srvs/Empty.h>
+#include <std_srvs/SetBool.h>
 #include <uav_ros_control_msgs/GeoBrickApproach.h>
-#include <color_filter/color.h>
+#include <uav_ros_control_msgs/TakeOff.h>
 
 using namespace ros_util;
 using namespace pickup_states;
 using namespace uav_reference;
 typedef mbzirc_mission_control::NextTask::Response CurrentTask;
-typedef uav_ros_control::MasterPickupStateMachineParametersConfig MasterConfig;
+typedef brick_pickup_sm::MasterPickupStateMachineParametersConfig MasterConfig;
 
 namespace uav_sm {
 

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10.0)
 project(brick_pickup_sm)
 
 find_package(catkin REQUIRED COMPONENTS roscpp dynamic_reconfigure uav_ros_control
-                                        uav_ros_control_msgs)
+                                        uav_search color_filter mbzirc_mission_control)
 
 # Find Eigen
 find_package(Eigen3)
@@ -36,10 +36,11 @@ target_link_libraries(visual_servo_state_sm ${catkin_LIBRARIES})
 add_dependencies(visual_servo_state_sm ${catkin_EXPORTED_TARGETS})
 
 # Global pickup state machine
-#add_executable(brick_pickup_sm nodes/GlobalPickupStateNode.cpp)
-#target_link_libraries(brick_pickup_sm ${catkin_LIBRARIES} ${GeographicLib_LIBRARIES})
-#add_dependencies(brick_pickup_sm ${catkin_EXPORTED_TARGETS})
+add_executable(brick_pickup_sm nodes/GlobalPickupStateNode.cpp)
+target_link_libraries(brick_pickup_sm ${catkin_LIBRARIES} ${GeographicLib_LIBRARIES})
+add_dependencies(brick_pickup_sm ${catkin_EXPORTED_TARGETS})
 
-# master pickup state machnie add_executable(master_brick_pickup
-# nodes/reference/MasterPickupControlNode.cpp) target_link_libraries(master_brick_pickup
-# ${catkin_LIBRARIES} nfilt)
+# master pickup state machnie
+add_executable(master_pickup_sm nodes/MasterPickupControlNode.cpp)
+target_link_libraries(master_pickup_sm ${catkin_LIBRARIES})
+add_dependencies(master_pickup_sm ${catkin_EXPORTED_TARGETS})

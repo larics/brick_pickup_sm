@@ -1,19 +1,19 @@
 #ifndef VISUAL_SERVO_STATE_MACHINE_H
 #define VISUAL_SERVO_STATE_MACHINE_H
 
-#include <std_msgs/Int32.h>
-#include <ros/ros.h>
 #include <brick_pickup_sm/GlobalPickupStateMachineParametersConfig.h>
-#include <uav_ros_control_msgs/GeoBrickApproach.h>
-#include <uav_ros_control/filters/Util.hpp>
+#include <brick_pickup_sm/PickupStates.hpp>
 #include <iostream>
+#include <nav_msgs/Odometry.h>
+#include <ros/ros.h>
+#include <std_msgs/Bool.h>
+#include <std_msgs/Int32.h>
+#include <std_srvs/Empty.h>
+#include <std_srvs/SetBool.h>
+#include <uav_ros_control/filters/Util.hpp>
 #include <uav_ros_control/reference/Global2Local.hpp>
 #include <uav_ros_control/reference/TrajectoryGenerator.hpp>
-#include <nav_msgs/Odometry.h>
-#include <std_srvs/SetBool.h>
-#include <std_srvs/Empty.h>
-#include <std_msgs/Bool.h>
-#include <brick_pickup_sm/PickupStates.hpp>
+#include <uav_ros_control_msgs/GeoBrickApproach.h>
 
 using namespace pickup_states;
 using namespace ros_util;
@@ -54,7 +54,7 @@ struct BrickPickupStatus
   Eigen::Vector3d m_localBrick, m_dropoffPos;
 };
 
-typedef uav_ros_control::GlobalPickupStateMachineParametersConfig PickupParams;
+typedef brick_pickup_sm::GlobalPickupStateMachineParametersConfig PickupParams;
 typedef uav_ros_control_msgs::GeoBrickApproach GeoBrickMsg;
 typedef GeoBrickMsg::Request GeoBrickReq;
 typedef GeoBrickMsg::Response GeoBrickResp;

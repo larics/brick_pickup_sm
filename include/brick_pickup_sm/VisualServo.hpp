@@ -5,25 +5,25 @@
 #ifndef UAV_ROS_CONTROL_VISUALSERVO_H
 #define UAV_ROS_CONTROL_VISUALSERVO_H
 
-#include <geometry_msgs/Vector3.h>
-#include <std_msgs/Float32.h>
-#include <std_msgs/Int32.h>
-#include <std_msgs/Bool.h>
-#include <std_srvs/SetBool.h>
-#include <trajectory_msgs/MultiDOFJointTrajectoryPoint.h>
 #include <geometry_msgs/PointStamped.h>
+#include <geometry_msgs/PoseWithCovariance.h>
+#include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
-#include <geometry_msgs/PoseWithCovariance.h>
+#include <std_msgs/Bool.h>
+#include <std_msgs/Float32.h>
+#include <std_msgs/Int32.h>
+#include <std_srvs/SetBool.h>
 #include <tf2/LinearMath/Quaternion.h>
+#include <trajectory_msgs/MultiDOFJointTrajectoryPoint.h>
 
-#include <ros/ros.h>
 #include <ros/publisher.h>
-#include <ros/subscriber.h>
+#include <ros/ros.h>
 #include <ros/service_server.h>
+#include <ros/subscriber.h>
 
-#include <dynamic_reconfigure/server.h>
 #include <brick_pickup_sm/VisualServoParametersConfig.h>
+#include <dynamic_reconfigure/server.h>
 #include <uav_ros_control/control/PID.hpp>
 #include <uav_ros_control/filters/NonlinearFilters.hpp>
 #include <uav_ros_control_msgs/VisualServoProcessValues.h>

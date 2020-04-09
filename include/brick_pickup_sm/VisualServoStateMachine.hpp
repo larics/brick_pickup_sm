@@ -1,23 +1,22 @@
 #ifndef VISUAL_SERVO_STATE_MACHINE_H
 #define VISUAL_SERVO_STATE_MACHINE_H
 
-#include <ros/ros.h>
+#include <brick_pickup_sm/PickupStates.hpp>
+#include <brick_pickup_sm/VisualServoStateMachineParametersConfig.h>
+#include <dynamic_reconfigure/server.h>
+#include <geometry_msgs/PointStamped.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Odometry.h>
+#include <ros/ros.h>
+#include <std_msgs/Bool.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/String.h>
 #include <std_srvs/Empty.h>
-#include <std_msgs/Bool.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <geometry_msgs/PointStamped.h>
-#include <dynamic_reconfigure/server.h>
-#include <std_srvs/Empty.h>
 #include <std_srvs/SetBool.h>
-#include <brick_pickup_sm/VisualServoStateMachineParametersConfig.h>
-#include <uav_ros_control_msgs/VisualServoProcessValues.h>
-#include <uav_ros_control/filters/NonlinearFilters.hpp>
-#include <brick_pickup_sm/PickupStates.hpp>
 #include <trajectory_msgs/MultiDOFJointTrajectoryPoint.h>
+#include <uav_ros_control/filters/NonlinearFilters.hpp>
+#include <uav_ros_control_msgs/VisualServoProcessValues.h>
 
 namespace uav_reference {
 
@@ -469,7 +468,7 @@ public:
       _touchdownDelta =
         _touchdownHeight// _relativeBrickDistance_local
                         //- fabs(_currHeightReference - _currOdom.pose.pose.position.z) //
-                        //Take into account position tracking error
+                        // Take into account position tracking error
         - _magnetOffset;// Take into account magnet offset
       _relativeBrickDistanceGlobal_lastValid = _relativeBrickDistance_global;
       _touchdownDuration = _touchdownDelta / _touchdownSpeed;
