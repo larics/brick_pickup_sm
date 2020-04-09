@@ -26,9 +26,9 @@ catkin_package(INCLUDE_DIRS LIBRARIES CATKIN_DEPENDS)
 include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 
 # Visual servo node
-#add_executable(visual_servo_node nodes/VisualServoNode.cpp src/VisualServo.cpp)
-#target_link_libraries(visual_servo_node ${catkin_LIBRARIES})
-#add_dependencies(visual_servo_node ${catkin_EXPORTED_TARGETS})
+add_executable(visual_servo_node nodes/VisualServoNode.cpp src/VisualServo.cpp)
+target_link_libraries(visual_servo_node ${catkin_LIBRARIES})
+add_dependencies(visual_servo_node ${catkin_EXPORTED_TARGETS})
 
 # visual servo state machine
 add_executable(visual_servo_state_sm nodes/VisualServoStateNode.cpp)
