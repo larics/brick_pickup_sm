@@ -1,0 +1,26 @@
+initial,
+IDLE,
+MasterStateMachine {
+  GLOBAL_SEARCH;
+},
+GlobalStateMachine {
+  APPROACH -> LOCAL_SEARCH : Destination reached;
+  LOCAL_SEARCH -> PICKUP;
+  PICKUP -> DROPOFF;
+},
+VisualServoStateMachine {
+  BRICK_ALIGNMENT -> DESCENT;
+  DESCENT -> TOUCHDOWN_ALIGNMENT;
+  TOUCHDOWN_ALIGNMENT -> TOUCHDOWN;
+};
+
+initial -> IDLE;
+IDLE -> GLOBAL_SEARCH : MasterPickup START;
+MasterStateMachine -> IDLE : Pickup STOP request;
+
+LOCAL_SEARCH -> GLOBAL_SEARCH : Search timeout;
+GLOBAL_SEARCH -> APPROACH : Target Found;
+
+PICKUP -> BRICK_ALIGNMENT;
+TOUCHDOWN -> DROPOFF;
+DROPOFF -> APPROACH : Approaching new target;
