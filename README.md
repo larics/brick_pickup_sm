@@ -23,6 +23,8 @@ Overall structure consits of four hierarchicaly connected state machines.
   * TOUCHDOWN_ALIGNMENT
   * TOUCHDOWN
 
+<div style="text-align:center"><img src="state_machine.svg" /></div>
+
 ## Prerequisites
 
 ### Build dependencies
