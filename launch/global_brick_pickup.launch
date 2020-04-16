@@ -19,12 +19,6 @@
     <!-- Load Global Pickup state machine parameters -->
     <rosparam command="load" file="$(find brick_pickup_sm)/config/global_pickup_sm.yaml" />
 
-    <!-- Start magnet_override service  -->
-    <node pkg="brick_pickup_sm" type="magnet_override_sim.py" name="magnet_override_sim" output="screen"/>
-
-    <!-- Start magnet activity topic -->
-    <node pkg="brick_pickup_sm" type="magnet_activity_sim.py" name="magnet_activity_sim" output="screen"/>
-
     <!-- Start global pickup state machine -->
     <node pkg="brick_pickup_sm" type="brick_pickup_sm" name="global_pickup_sm" output="screen">
       <remap from="odometry" to="$(arg odom)"/>

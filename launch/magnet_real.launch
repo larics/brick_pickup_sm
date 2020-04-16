@@ -1,0 +1,9 @@
+<launch>
+
+  <!-- Magnet overrride service -->
+  <include file="$(find multirotor_transformations)/launch/rc_override.launch"/>
+
+  <!-- Start magnet activity topic TODO: Check topics inside this launch file! -->
+  <include file="$(find brick_detector)/launch/brick_detector.launch"/>
+
+</launch>

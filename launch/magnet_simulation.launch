@@ -1,0 +1,9 @@
+<launch>
+
+    <!-- Start magnet_override service  -->
+    <node pkg="brick_pickup_sm" type="magnet_override_sim.py" name="magnet_override_sim" output="screen"/>
+
+    <!-- Start magnet activity topic -->
+    <node pkg="brick_pickup_sm" type="magnet_activity_sim.py" name="magnet_activity_sim" output="screen"/>
+    
+</launch>
