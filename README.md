@@ -4,26 +4,37 @@ A collection of state machines for a UAV brick pickup scenario.
 
 ## State Machine Structure
 
-Overall structure consits of four hierarchicaly connected state machines.
+Overall structure consits of three nested state machines.
 
 * **Master State Machine**
-  * OFF
-  * SEARCH - e.g. search a global area with a predefined pattern
+  * ARM
+  * TAKOFF
+  * GLOBAL_SEARCH - e.g. search a global area with a predefined pattern
   * ACTION - e.g. pickup and deliver brick
+  * RTL
+  * LAND
 * **Global State Machine**
-  * OFF
   * APPROACH
-  * SEARCH - search local area around target global position
+  * LOCAL_SEARCH - search local area around target global position
   * ATTEMPT_PICKUP
   * DROPOFF
 * **Visual Servo State Machine**
-  * OFF
   * BRICK_ALIGNMENT
   * DESCENT
   * TOUCHDOWN_ALIGNMENT
   * TOUCHDOWN
 
-<div style="text-align:center"><img src="state_machine.svg" /></div>
+Please note that states *ATTEMPT_PICKUP* and *ACTION* have been simplified out of the state diagram.
+
+<div style="text-align:center">
+  <img src="state_machine.svg" />
+</div>
+
+This is a generated state machine diagram with [state-machine-cat](https://github.com/sverweij/state-machine-cat) as follows.
+
+```bash
+smcat state_machine.smcat
+```
 
 ## Prerequisites
 

@@ -1,26 +1,46 @@
 initial,
 IDLE,
-MasterStateMachine {
-  GLOBAL_SEARCH;
+BrickPickupStateMachine{
+VisualServoStateMachine [color="orange"] {
+  BRICK_ALIGNMENT -> DESCENT [color="orange"] : Constraints - 
+  SATISFIED;
+  DESCENT -> TOUCHDOWN_ALIGNMENT [color="orange"] : TOUCHDOWN height - 
+  REACHED;
+  TOUCHDOWN_ALIGNMENT -> TOUCHDOWN [color="orange"] : Constraints - 
+  SATISFIED;
+  TOUCHDOWN -> BRICK_ALIGNMENT [color="orange"] : Pickup -
+  UNSUCESSFUL;
 },
-GlobalStateMachine {
-  APPROACH -> LOCAL_SEARCH : Destination reached;
-  LOCAL_SEARCH -> PICKUP;
-  PICKUP -> DROPOFF;
+MasterStateMachine [color="red"] {
+  ARM -> TAKEOFF [color="red"] : Arm - SUCCESS;
+  TAKEOFF -> GLOBAL_SEARCH [color="red"] : Takeoff - SUCCESS;
+  GLOBAL_SEARCH -> RTL [color="red"] : Global Search - TIMEOUT;
+  RTL -> LAND [color="red"] : Launch - REACHED;
 },
-VisualServoStateMachine {
-  BRICK_ALIGNMENT -> DESCENT;
-  DESCENT -> TOUCHDOWN_ALIGNMENT;
-  TOUCHDOWN_ALIGNMENT -> TOUCHDOWN;
+GlobalStateMachine [color="blue"] {
+  DROPOFF -> APPROACH [color="blue"] : Mission Request -
+  NEW TARGET; 
+  APPROACH -> LOCAL_SEARCH [color="blue"] : Target - 
+  REACHED;
 };
+},
+final;
 
-initial -> IDLE;
-IDLE -> GLOBAL_SEARCH : MasterPickup START;
-MasterStateMachine -> IDLE : Pickup STOP request;
+initial -> IDLE : UAV - ON;
+IDLE -> ARM : Scenario - START;
+ARM -> IDLE [color="red"] : Arm FAIL;
+TAKEOFF -> IDLE [color="red"] : Takeoff - FAIL;
+# There are no new available missions
+DROPOFF -> RTL [color="blue"];
 
-LOCAL_SEARCH -> GLOBAL_SEARCH : Search timeout;
-GLOBAL_SEARCH -> APPROACH : Target Found;
 
-PICKUP -> BRICK_ALIGNMENT;
-TOUCHDOWN -> DROPOFF;
-DROPOFF -> APPROACH : Approaching new target;
+LAND -> final : Scenario - END;
+# If target is LOST at any
+# point in VisualServoStateMachine
+VisualServoStateMachine -> APPROACH [color="orange"];
+LOCAL_SEARCH -> GLOBAL_SEARCH [color="blue"] : Local Search - 
+TIMEOUT;
+TOUCHDOWN -> DROPOFF [color="orange"] : Pickup - SUCCESSFUL;
+LOCAL_SEARCH -> BRICK_ALIGNMENT [color="blue"] : Target - 
+IN SIGHT;
+GLOBAL_SEARCH -> APPROACH [color="red"] : Target FOUND;
