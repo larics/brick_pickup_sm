@@ -86,7 +86,7 @@ Launch the brick pickup stack as follows.
 ```bash
 roslaunch brick_pickup_sm visual_servo_brick.launch
 roslaunch brick_pickup_sm global_brick_pickup.launch
-roslaunch brick_pickup_sm master_pickup_control.launch
+roslaunch brick_pickup_sm master_pickup_control.launch manual_target_location:=false
 ```
 
 To start the brick pickup scenario call the following ROS service.

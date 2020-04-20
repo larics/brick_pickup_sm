@@ -1,5 +1,6 @@
 <launch>
   <arg name="namespace" default="$(env UAV_NAMESPACE)"/>
+  <arg name="manual_target_location" default="false"/>
   
   <group ns="$(arg namespace)">
     <!-- Point generator search algorithm -->
@@ -8,10 +9,12 @@
     <rosparam command="load" file="$(find brick_pickup_sm)/config/master_pickup_sm.yaml"/>
 
     <!-- This node remaps brick position only when brick is certain that we see kopter bricks -->
-    <node name="kopter_patch_node" pkg="brick_pickup_sm" type="kopter_centroid_patch.py" output="screen"/>
+    <node name="kopter_patch_node" pkg="brick_pickup_sm" type="kopter_centroid_patch.py" output="screen">
+      <param name="manual_target_location" value="$(arg manual_target_location)"/>
+    </node>
 
     <!-- Master Pickup State Machine -->
-    <node name="master_brick_pickup" pkg="brick_pickup_sm" type="master_brick_pickup" output="screen">
+    <node name="master_brick_pickup" pkg="brick_pickup_sm" type="master_pickup_sm" output="screen">
       <remap from="n_contours" to="red_color_filter/nContours"/>
       <!-- remap from="global_centroid_point" to="visual_servo/centroid/transformed" / -->
       <remap from="global_centroid_point" to="kopter/patch_position"/>
