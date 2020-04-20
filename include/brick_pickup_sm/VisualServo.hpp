@@ -45,7 +45,6 @@ public:
    * Default constructor.
    */
   VisualServo(ros::NodeHandle &);
-  virtual ~VisualServo();
 
   /**
    * Update position setpoint.
@@ -92,8 +91,9 @@ private:
   double _error_x = 0, _error_y = 0, _error_z = 0, _error_yaw = 0, _offset_x = 0;
   double _offset_y = 0, _offset_z = 0, _deadzone_x = 0, _deadzone_y = 0, _deadzone_z = 0,
          _deadzone_yaw = 0;
-  double _qx, _qy, _qz, _qw, _uavYaw, _uavRoll, _uavPitch, _setpointYaw, _yawAddedOffset;
-  double _rate, _rateLimit;
+  double _qx = 0, _qy = 0, _qz = 0, _qw = 0, _uavYaw = 0, _uavRoll = 0, _uavPitch = 0,
+         _setpointYaw = 0, _yawAddedOffset = 0;
+  double _rate = 0, _rateLimit = 0;
 
   bool _visualServoEnabled = false, _compensate_roll_and_pitch = false;
   bool _x_frozen = false, _y_frozen = false, _yaw_frozen = false;
@@ -145,8 +145,8 @@ private:
     _VSParamCallback;
 };
 
-void runDefault(VisualServo &cc, ros::NodeHandle &nh);
-void runIdle(VisualServo &vs, ros::NodeHandle &nh);
+void runDefault(VisualServo &, ros::NodeHandle &);
+void runIdle(VisualServo &, ros::NodeHandle &);
 }// namespace uav_reference
 
 #endif// UAV_ROS_CONTROL_VISUALSERVO_H

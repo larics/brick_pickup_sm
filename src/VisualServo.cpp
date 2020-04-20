@@ -3,7 +3,7 @@
 //
 
 #include <brick_pickup_sm/VisualServo.hpp>
-#include <math.h>
+#include <cmath>
 #include <tf/LinearMath/Transform.h>
 #include <uav_ros_control/filters/NonlinearFilters.hpp>
 
@@ -12,7 +12,8 @@ namespace uav_reference {
 VisualServo::VisualServo(ros::NodeHandle &nh)
 {
   initializeParameters(nh);
-  ros::Duration(2.0).sleep();
+  const auto initialSleepTime = 2.0;
+  ros::Duration(initialSleepTime).sleep();
 
   // Define Publishers
   _pubXError = nh.advertise<std_msgs::Float32>("visual_servo/x_error", 1);
@@ -59,13 +60,14 @@ VisualServo::VisualServo(ros::NodeHandle &nh)
   _new_point.accelerations = std::vector<geometry_msgs::Twist>(1);
 }
 
-VisualServo::~VisualServo() {}
-
 void uav_reference::VisualServo::initializeParameters(ros::NodeHandle &nh)
 {
   ROS_WARN("CascadePID::initializeParameters()");
 
-  bool x_armed = false, y_armed = false, z_armed = false, yaw_armed = false;
+  bool x_armed = false;
+  bool y_armed = false;
+  bool z_armed = false;
+  bool yaw_armed = false;
   bool initialized =
     nh.getParam("visual_servo/compensate_roll_and_pitch", _compensate_roll_and_pitch)
     && nh.getParam("visual_servo/yaw_added_offset", _yawAddedOffset)
@@ -105,10 +107,10 @@ void uav_reference::VisualServo::initializeParameters(ros::NodeHandle &nh)
     _cameraPose.orientation.z,
     _cameraPose.orientation.w);
 
-  if (x_armed) _x_axis_PID.initializeParameters(nh, "visual_servo/pid_x");
-  if (y_armed) _y_axis_PID.initializeParameters(nh, "visual_servo/pid_y");
-  if (z_armed) _z_axis_PID.initializeParameters(nh, "visual_servo/pid_z");
-  if (yaw_armed) _yaw_PID.initializeParameters(nh, "visual_servo/pid_yaw");
+  if (x_armed) { _x_axis_PID.initializeParameters(nh, "visual_servo/pid_x"); }
+  if (y_armed) { _y_axis_PID.initializeParameters(nh, "visual_servo/pid_y"); }
+  if (z_armed) { _z_axis_PID.initializeParameters(nh, "visual_servo/pid_z"); }
+  if (yaw_armed) { _yaw_PID.initializeParameters(nh, "visual_servo/pid_yaw"); }
 
   if (!initialized) {
     ROS_FATAL("VisualServo::initalizeParameters() - failed to initialize parameters");
@@ -174,14 +176,14 @@ bool uav_reference::VisualServo::startVisualServoServiceCb(
   std_srvs::SetBool::Response &response)
 {
   if (request.data) {
-    if (!isVisualServoEnabled()) ROS_INFO("UAV VisualServo - enabling visual servo.");
+    if (!isVisualServoEnabled()) { ROS_INFO("UAV VisualServo - enabling visual servo."); }
     _visualServoEnabled = true;
     _yaw_PID.resetIntegrator();
     _x_axis_PID.resetIntegrator();
     _y_axis_PID.resetIntegrator();
     response.message = "Visual servo enabled.";
   } else {
-    if (isVisualServoEnabled()) ROS_INFO("UAV VisualServo - disabling visual servo.");
+    if (isVisualServoEnabled()) { ROS_INFO("UAV VisualServo - disabling visual servo."); }
     _visualServoEnabled = false;
     _yaw_PID.resetIntegrator();
     _x_axis_PID.resetIntegrator();
@@ -203,7 +205,7 @@ bool uav_reference::VisualServo::startVisualServoServiceCb(
 
 void VisualServo::visualServoParamsCb(
   brick_pickup_sm::VisualServoParametersConfig &configMsg,
-  uint32_t level)
+  uint32_t /* unused */)
 {
   ROS_WARN("VisualServo::parametersCallback");
   _deadzone_x = configMsg.deadzone_x;
@@ -396,16 +398,12 @@ void VisualServo::targetCentroidCb(const geometry_msgs::PointStamped &msg)
 
 static double signum(double val)
 {
-  if (val >= 0) {
-    return 1;
-  } else {
-    return -1;
-  }
+  if (val >= 0) { return 1; }
+  return -1;
 }
 
 void VisualServo::updateSetpoint()
 {
-
   double move_forward = 0.0;
   double move_left = 0.0;
   double change_yaw = 0.0;
@@ -414,25 +412,25 @@ void VisualServo::updateSetpoint()
       && _targetCentroid.point.z != -1) {
 
     // x and y are in the UAV reference frame
-    if (!_x_frozen)
+    if (!_x_frozen) {
       move_forward = _x_axis_PID.compute(
         _targetCentroid.point.x, _uavOdom.pose.pose.position.x, 1 / _rate);
-    if (!_y_frozen)
+    }
+    if (!_y_frozen) {
       move_left = _y_axis_PID.compute(
         _targetCentroid.point.y, _uavOdom.pose.pose.position.y, 1 / _rate);
-    if (!_yaw_frozen) change_yaw = _yaw_PID.compute(0, _error_yaw, 1 / _rate);
+    }
+    if (!_yaw_frozen) { change_yaw = _yaw_PID.compute(0, _error_yaw, 1 / _rate); }
 
     // Do some basic rate limiter
     const double newSetpoint_0 = _uavPos[0] + move_forward;
     const double newSetpoint_1 = _uavPos[1] + move_left;
 
     static constexpr double DT = 0.02;
-
     double rate_0 = fabs(newSetpoint_0 - _setpointPosition[0]) / DT;
     double rate_1 = fabs(newSetpoint_1 - _setpointPosition[1]) / DT;
 
     if (rate_0 > _rateLimit) {
-      rate_0 = _rateLimit;
       _setpointPosition[0] =
         _setpointPosition[0]
         + signum(newSetpoint_0 - _setpointPosition[0]) * _rateLimit * DT;
@@ -441,22 +439,15 @@ void VisualServo::updateSetpoint()
     }
 
     if (rate_1 > _rateLimit) {
-      rate_1 = _rateLimit;
       _setpointPosition[1] =
         _setpointPosition[1]
         + signum(newSetpoint_1 - _setpointPosition[1]) * _rateLimit * DT;
     } else {
       _setpointPosition[1] = newSetpoint_1;
     }
-
-    //_setpointPosition[0] = _uavPos[0] + move_forward;
-    //_setpointPosition[1] = _uavPos[1] + move_left;
   } else {
     _setpointPosition[0] = _uavPos[0];
     _setpointPosition[1] = _uavPos[1];
-
-    double rate_0 = 0;
-    double rate_1 = 0;
   }
 
 
@@ -477,7 +468,6 @@ void VisualServo::updateSetpoint()
 
 void VisualServo::publishNewSetpoint()
 {
-
   tf2::Quaternion q;
   q.setEulerZYX(_setpointYaw, 0.0, 0.0);
 
@@ -500,9 +490,9 @@ void VisualServo::publishStatus()
 
 bool VisualServo::isVisualServoEnabled() { return _visualServoEnabled; }
 
-void runDefault(VisualServo &visualServoRefObj, ros::NodeHandle &nh)
+void runDefault(VisualServo &visualServoRefObj, ros::NodeHandle & /* unused */)
 {
-  double rate = 50;
+  constexpr auto rate = 50.;
   visualServoRefObj.setRate(rate);
   ros::Rate loopRate(rate);
 
@@ -517,10 +507,10 @@ void runDefault(VisualServo &visualServoRefObj, ros::NodeHandle &nh)
   }
 }
 
-void runIdle(VisualServo &visualServoRefObj, ros::NodeHandle &nh)
+void runIdle(VisualServo &visualServoRefObj, ros::NodeHandle & /* unused */)
 {
-  double rate = 50;
-  visualServoRefObj.setRate(50);
+  constexpr auto rate = 50.;
+  visualServoRefObj.setRate(rate);
   ros::spin();
 }
 
