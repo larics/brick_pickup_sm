@@ -23,21 +23,18 @@ namespace uav_sm {
 struct BrickPickupStatus
 {
   BrickPickupStatus() : BrickPickupStatus("red", Eigen::Vector3d(0, 0, 0)) {}
-  BrickPickupStatus(const std::string &t_brickColor,
-    const Eigen::Vector3d &t_brickLocal,
+  BrickPickupStatus(std::string t_brickColor,
+    Eigen::Vector3d t_brickLocal,
     const GlobalPickupStates t_status = GlobalPickupStates::OFF)
-    : m_brickColor(t_brickColor), m_status(t_status), m_localBrick(t_brickLocal),
-      m_dropoffPos(-1, -1, -1), m_dropoffPositionSet(false)
+    : m_brickColor(std::move(t_brickColor)), m_status(t_status),
+      m_localBrick(std::move(t_brickLocal)), m_dropoffPos(-1, -1, -1),
+      m_dropoffPositionSet(false)
   {}
 
   bool isOff() { return m_status == GlobalPickupStates::OFF; }
-
   bool isSearching() { return m_status == GlobalPickupStates::SEARCH; }
-
   bool isApproaching() { return m_status == GlobalPickupStates::APPROACH; }
-
   bool isAttemptingPickup() { return m_status == GlobalPickupStates::ATTEMPT_PICKUP; }
-
   bool isDropOff() { return m_status == GlobalPickupStates::DROPOFF; }
 
   void setDropoffPosition(Eigen::Vector3d &&vec)
@@ -51,24 +48,26 @@ struct BrickPickupStatus
   bool m_dropoffPositionSet;
   GlobalPickupStates m_status;
   std::string m_brickColor;
-  Eigen::Vector3d m_localBrick, m_dropoffPos;
+  Eigen::Vector3d m_localBrick;
+  Eigen::Vector3d m_dropoffPos;
 };
 
-typedef brick_pickup_sm::GlobalPickupStateMachineParametersConfig PickupParams;
-typedef uav_ros_control_msgs::GeoBrickApproach GeoBrickMsg;
-typedef GeoBrickMsg::Request GeoBrickReq;
-typedef GeoBrickMsg::Response GeoBrickResp;
+using PickupParams = brick_pickup_sm::GlobalPickupStateMachineParametersConfig;
+using GeoBrickMsg = uav_ros_control_msgs::GeoBrickApproach;
+using GeoBrickReq = GeoBrickMsg::Request;
+using GeoBrickResp = GeoBrickMsg::Response;
 
 class GlobalPickupStateMachine
 {
 
 public:
-  GlobalPickupStateMachine(ros::NodeHandle &t_nh)
+  explicit GlobalPickupStateMachine(ros::NodeHandle &t_nh)
     : m_handlerVSSMState(t_nh, "visual_servo_sm/state"),
       m_handlerOdometry(t_nh, "odometry"), m_handlerBrickAttached(t_nh, "brick_attached"),
       m_handlerTrajectoryStatus(t_nh, "topp/status"),
       m_handlerCurrentTrajectory(t_nh, "carrot/trajectory"),
-      m_handlerPatchCount(t_nh, "n_contours"), m_global2Local(t_nh)
+      m_handlerPatchCount(t_nh, "n_contours"), m_global2Local(t_nh),
+      m_searchRadius(1.0)
   {
     initialize_parameters(t_nh);
 
@@ -108,7 +107,7 @@ public:
   }
 
 private:
-  inline const LocalPickupState getCurrentVisualServoState()
+  inline LocalPickupState getCurrentVisualServoState()
   {
     return static_cast<LocalPickupState>(m_handlerVSSMState.getData().data);
   }
@@ -192,6 +191,7 @@ private:
 
   void publish_trajectory(const ros::TimerEvent & /* unused */)
   {
+    const auto defaultNumberOfPoints = 20;
     if (m_currentStatus.isSearching() && !is_trajectory_active()) {
       ROS_INFO(
         "BrickPickup - generating SEARCH trajectory with radius: %.3f.", m_searchRadius);
@@ -200,7 +200,7 @@ private:
         m_currentStatus.m_localBrick.y(),
         m_currentStatus.m_localBrick.z(),
         m_handlerCurrentTrajectory.getData(),
-        20, /* Number of points */
+        defaultNumberOfPoints,
         m_searchRadius));
       m_searchRadius += m_pickupConfig->getData().search_readius_increment;
       return;
@@ -259,7 +259,8 @@ private:
 
   void set_dropoff_position(double altitude)
   {
-    double dropoffLat, dropoffLon;
+    double dropoffLat;
+    double dropoffLon;
     bool gotLat = m_nh.getParam("brick_dropoff/lat", dropoffLat);
     bool gotLon = m_nh.getParam("brick_dropoff/lon", dropoffLon);
     ROS_FATAL_COND(!gotLat || !gotLon, "BrickPickup - dropoff position unavailable");
@@ -269,7 +270,7 @@ private:
       m_currentStatus.setDropoffPosition(
         m_global2Local.toLocal(dropoffLat, dropoffLon, altitude, true));
     } else {
-      // Otherwise set dropoff to zero - TODO: Have a better backupf
+      // Otherwise set dropoff to zero - TODO: Have a better backup
       m_currentStatus.setDropoffPosition(Eigen::Vector3d(0, 0, altitude));
     }
   }
@@ -287,8 +288,7 @@ private:
       nh, "brick_pickup/initial_search_radius", initParams.initial_search_radius);
     getParamOrThrow(
       nh, "brick_pickup/search_readius_increment", initParams.search_readius_increment);
-    m_pickupConfig.reset(
-      new ParamHandler<PickupParams>(initParams, "brick_config/brick_pickup"));
+    m_pickupConfig = std::make_unique<ParamHandler<PickupParams>>(initParams, "brick_config/brick_pickup");
   }
 
   bool all_services_available()
@@ -359,7 +359,7 @@ private:
       m_pickupConfig->getData().dropoff_approach_tolerance);
   }
 
-  bool is_brick_picked_up() { return m_handlerBrickAttached.getData().data == true; }
+  bool is_brick_picked_up() { return m_handlerBrickAttached.getData().data; }
 
   void clear_current_trajectory()
   {
@@ -383,7 +383,7 @@ private:
     }
   }
 
-  double m_searchRadius;// Initialized at initializeParameters
+  double m_searchRadius;
   Global2Local m_global2Local;
   BrickPickupStatus m_currentStatus;
   std::unique_ptr<ParamHandler<PickupParams>> m_pickupConfig;
