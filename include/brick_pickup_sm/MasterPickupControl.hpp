@@ -30,8 +30,8 @@
 using namespace ros_util;
 using namespace pickup_states;
 using namespace uav_reference;
-typedef mbzirc_mission_control::NextTask::Response CurrentTask;
-typedef brick_pickup_sm::MasterPickupStateMachineParametersConfig MasterConfig;
+using CurrentTask = mbzirc_mission_control::NextTask::Response;
+using MasterConfig = brick_pickup_sm::MasterPickupStateMachineParametersConfig;
 
 namespace uav_sm {
 
@@ -45,19 +45,19 @@ public:
   void setDropoffLocation(Eigen::Vector3d dropoffLocation)
   {
     m_dropoffLocationFound = true;
-    m_dropoffLocation = dropoffLocation;
+    m_dropoffLocation = std::move(dropoffLocation);
   }
 
   void setBrickLocation(Eigen::Vector3d brickLocation)
   {
     m_brickLocationFound = true;
-    m_brickLocation = brickLocation;
+    m_brickLocation = std::move(brickLocation);
   }
 
   void setCurrentTask(CurrentTask newTask)
   {
     m_taskCompleted = false;
-    m_currentTask = newTask;
+    m_currentTask = std::move(newTask);
   }
 
   const CurrentTask &getCurrentTask() { return m_currentTask; }
@@ -66,7 +66,7 @@ public:
 
   bool isCurrentTaskCompleted() { return m_taskCompleted; }
 
-  bool setTaskCompleted(bool status) { m_taskCompleted = status; }
+  void setTaskCompleted(bool status) { m_taskCompleted = status; }
 
   const Eigen::Vector3d &getBrickLocation() { return m_brickLocation; }
 
@@ -80,7 +80,7 @@ private:
 class MasterPickupControl
 {
 public:
-  MasterPickupControl(ros::NodeHandle &t_nh)
+  explicit MasterPickupControl(ros::NodeHandle &t_nh)
     : m_handlerState(t_nh, "mavros/state"), m_handlerCarrotStatus(t_nh, "carrot/status"),
       m_handlerOdometry(t_nh, "mavros/global_position/local"),
       m_handlerPatchCount(t_nh, "n_contours"),
@@ -118,7 +118,7 @@ public:
 
   void run(ros::NodeHandle &t_nh)
   {
-    double rate = getParamOrThrow<double>(t_nh, "master_pickup/state_timer_rate");
+    auto rate = getParamOrThrow<double>(t_nh, "master_pickup/state_timer_rate");
     ros::Rate loopRate(rate);
 
     while (ros::ok()) {
@@ -176,8 +176,8 @@ private:
     getParamOrThrow(t_nh, "master_pickup/takeoff_height", config.takeoff_height);
     getParamOrThrow(t_nh, "master_pickup/search_height", config.search_height);
     getParamOrThrow(t_nh, "master_pickup/goto_home_tol", config.goto_home_tol);
-    m_masterConfig.reset(
-      new ParamHandler<MasterConfig>(config, "brick_config/master_pickup"));
+    m_masterConfig =
+      std::make_unique<ParamHandler<MasterConfig>>(config, "brick_config/master_pickup");
   }
 
   bool all_services_available()
@@ -533,7 +533,9 @@ private:
     clear_current_trajectory();
     ROS_INFO("MasterPickup - generating search trajectory.");
     m_pubTrajGen.publish(searchtrajectory);
-    ros::Duration(2.0).sleep();
+
+    constexpr auto sleepTime = 2.0;
+    ros::Duration(sleepTime).sleep();
   }
 
   void clear_current_trajectory()
