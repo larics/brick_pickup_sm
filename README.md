@@ -103,7 +103,7 @@ To start the SITL simulation run the following commands.
 sim_vehicle.py -v ArduCopter -f gazebo-iris -m --mav10 --console -I0
 roslaunch ardupilot_gazebo bebop.launch enable_velodyne:=false enbale_magnet:=true
 roslaunch ardupilot_gazebo mavros.launch
-rosrun ardupilot_gazebo brick_spawn.sh
+rosrun brick_pickup_sm brick_spawn.sh
 roslaunch brick_pickup_sm magnet_simulation.launch
 ```
 
