@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="name" default="brick_red"/>
+    <arg name="brick" value="$(find brick_pickup_sm)/models/brick.urdf"/>
+    <arg name="color" default="Red"/>
+    <arg name="x"     default="3"/>
+    <arg name="y"     default="0.2"/>
+    <arg name="number" default="1"/>
+
+	<!-- send the robot XML to param server -->
+	<param name="brick_description" command="$(find xacro)/xacro --inorder $(arg brick)
+    name:=$(arg name) color:=$(arg color) number:=$(arg number)"	/>
+    
+  <node name="spawn_brick" pkg="gazebo_ros" type="spawn_model"
+        args="-param brick_description -urdf -x $(arg x) -y $(arg y) -z 0.2 -model $(arg name)_$(arg number)"
+        respawn="false" output="screen"/>
+    
+</launch>

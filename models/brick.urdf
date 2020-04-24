@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<robot name="$(arg name)_$(arg number)" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="name" value="$(arg name)"/>
+  <xacro:property name="color" value="$(arg color)"/>
+  <xacro:property name="number" value="$(arg number)"/>
+
+  <material name = "${color}">
+    <color rgba="0.8 0.0 0 1.0"/>
+  </material>
+
+  <material name = "Gray">
+    <color rgba="0.8 0.8 0.8 1.0"/>
+  </material>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy ="0.01" iyz = "0" izz = "0.01" />
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="0.3 0.2 0.2"/>
+      </geometry>
+      <material name="${color}"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>      
+        <box size = "0.3 0.2 0.2"/>  
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="magnet_patch">
+    <visual>
+      <geometry>
+        <box size="0.2 0.125 0.001"/>
+      </geometry>
+      <material name="Gray"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.1 0.025 0.0005"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="patch_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.1" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="magnet_patch"/>
+  </joint>
+
+  <gazebo reference="base_link">
+    <material>Gazebo/${color}</material>
+  </gazebo>
+  <gazebo reference="magnet_patch">
+    <material>Gazebo/Gray</material>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="dipole_magnet" filename="libstorm_gazebo_dipole_magnet.so">
+      <bodyName>magnet_patch</bodyName>
+      <dipole_moment>0 0 1</dipole_moment>
+      <!-- Set to false if not using ROS -->
+      <shouldPublish>true</shouldPublish>
+      <topicNs>magnet_${number}</topicNs>
+      <updateRate>100</updateRate>
+      <gain>1.0</gain>
+    </plugin>
+  </gazebo>
+
+</robot>
